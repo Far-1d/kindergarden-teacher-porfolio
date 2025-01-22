@@ -3,6 +3,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Caveat, Jua, Playpen_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
+import Provider from "@/components/Provider"
+
 
 const caveat = Caveat({
   variable: "--font-caveat",
@@ -36,13 +38,15 @@ export default function RootLayout({
       <body
         className={`${caveat.variable} ${jua.variable} ${playpen.variable} antialiased overflow-x-hidden overflow-y-auto`}
       >
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            disableTransitionOnChange
-          >
-            {children}
-        </ThemeProvider>
+        <Provider session={undefined}>
+          <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              disableTransitionOnChange
+            >
+              {children}
+          </ThemeProvider>
+        </Provider>
         <Toaster/>
       </body>
     </html>

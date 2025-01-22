@@ -2,9 +2,8 @@
 import { NextResponse } from 'next/server';
 import { connectToDB } from '@/lib/database';
 import Post from '@/models/post'; // Adjust the import based on your structure
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
+import { google } from 'googleapis';
+import { Readable } from 'node:stream';
 
 export const config = {
     api: {
@@ -15,9 +14,23 @@ export const config = {
 
 export const POST = async (req: Request) => {
     await connectToDB();
+    const formData = await req.formData();
+    const refreshToken = formData.get('refreshToken') as string;
+
+    const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+    );
+
+    // Set credentials (you might want to store these securely)
+    oauth2Client.setCredentials({
+        refresh_token: refreshToken,
+    });
+    
+    const drive = google.drive({ version: 'v3', auth: oauth2Client });
+
     try{
-        // const form = new IncomingForm();
-        const formData = await req.formData();
+        
         const section = formData.get('section') as string;
         const title = formData.get('title') as string;
         const description = formData.get('description') as string;
@@ -25,33 +38,52 @@ export const POST = async (req: Request) => {
         const color = formData.get('color') as string;
         // Handle the file upload
         const file = formData.get('file') as File;
-        let filePath: string | null = null;
+        let fileId: string | null = null;
         
         if (file) {
             const buffer = await file.arrayBuffer(); // Get the file as an ArrayBuffer
-            const originalFileName = file.name;
-            const extension = path.extname(originalFileName); // Get the file extension
-            const baseName = path.basename(originalFileName, extension); // Get the base name without extension
-            const randomString = crypto.randomBytes(3).toString('hex'); // Generate a random string
-            // Create new filename
-            const newFileName = `${baseName}-${randomString}${extension}`;
+            // Upload the file to Google Drive
+            try {
+                const body = {
+                                name: file.name,
+                                mimeType: file.type,
+                            };
+                const media = {
+                                mimeType: file.type,
+                                body: Readable.from(Buffer.from(buffer)),
+                            };
 
-            filePath = path.join(process.cwd(), `public/files/${section}`, newFileName);
-            
-            const dirPath = path.join(process.cwd(), `public/files/${section}`);
-            // Ensure the directory exists
-            if (!fs.existsSync(dirPath)) {
-                fs.mkdirSync(dirPath, { recursive: true });
+                const response = await drive.files.create({
+                    requestBody: body,
+                    media: media,
+                });
+                
+                fileId = response.data.id!; // Get the uploaded file ID
+    
+                // Make the file public
+                await drive.permissions.create({
+                    fileId: fileId!,
+                    requestBody: {
+                        role: 'reader',
+                        type: 'anyone',
+                    },
+                });
+            } catch (error: BodyInit|Error|unknown|any) {
+                console.log('error happended: ', error);
+                if (error.response) {
+                    // If the error has a response (from Google API)
+                    console.error("Error response from Google Drive:", error.response.data);
+                }
+                return;
             }
-
-            // Save the file to the desired location
-            fs.writeFileSync(filePath, Buffer.from(buffer)); // Write the buffer to a file
+            
         }
+        console.log("file id is : ", fileId);
         const newPost = new Post({
             section,
             title,
             description,
-            file: filePath ? `/files/${section}/${path.basename(filePath)}` : null,
+            file: fileId,
             icon: Number(icon),
             iconColor: color,
         });

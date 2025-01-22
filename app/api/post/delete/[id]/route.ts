@@ -2,13 +2,27 @@
 import { NextResponse } from 'next/server';
 import { connectToDB } from '@/lib/database';
 import Post from '@/models/post'; // Adjust the import based on your structure
-import fs from 'fs';
-import path from 'path';
+import { google } from 'googleapis';
+import { Readable } from 'node:stream';
 
 
 export const DELETE = async (request:Request, {params}:{params: Promise<{ id: string }>}): Promise<NextResponse> => {
     const id = (await params).id;
-    console.log("method: ",request.method, "    id: ", id);
+
+    const formData = await request.formData();
+    const refreshToken = formData.get('refreshToken') as string;
+
+    const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+    );
+
+    // Set credentials (you might want to store these securely)
+    oauth2Client.setCredentials({
+        refresh_token: refreshToken,
+    });
+    
+    const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
     try {
         await connectToDB();
@@ -19,10 +33,10 @@ export const DELETE = async (request:Request, {params}:{params: Promise<{ id: st
             return NextResponse.json({ message: 'Post not found' }, { status: 404 });
         } else {
             if (existingPost.file) {
-                const oldFilePath = path.join(process.cwd(), `public${existingPost.file}`);
-                if (fs.existsSync(oldFilePath)) {
-                    fs.unlinkSync(oldFilePath); // Remove the old file
-                }
+                // Delete the file from Google Drive
+                await drive.files.delete({
+                    fileId: existingPost.file, // File ID to be deleted
+                });
             }
         }
 

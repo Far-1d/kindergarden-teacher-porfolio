@@ -61,10 +61,9 @@ const Nav: React.FC<NavProps> = ({handlePageToggle, page}) =>{
             
             {!page && (
               <Link href="/" 
-              className="flex gap-3 px-5 py-2 bg-neutral-100 dark:bg-neutral-900 bg-opacity-30 dark:bg-opacity-30
-                rounded-md shadow-sm text-black dark:text-white">
-                home 
-                <FaHome className="w-5 h-5 fill-red-400 animate-pulse"/>
+              className="flex gap-3 px-2 py-2 bg-neutral-100 dark:bg-neutral-900 bg-opacity-30 dark:bg-opacity-30
+                rounded-md shadow-sm text-black dark:text-white"> 
+                <FaHome className="w-5 h-5 fill-red-400"/>
               </Link>
             )}
 

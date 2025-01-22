@@ -8,6 +8,8 @@ import { LuFlower2 } from "react-icons/lu";
 import { BsFlower2 } from "react-icons/bs";
 import { toast } from "sonner"
 import { HexColorPicker } from "react-colorful";
+import { useSession } from 'next-auth/react';
+
 
 const UploadForm = () => {
     const sectionRef = useRef<HTMLSelectElement>(null);
@@ -20,10 +22,11 @@ const UploadForm = () => {
     const [processing, setProcessing] = useState<boolean>(false);
     const [fileName, setFileName] = useState<string>('Choose file');
     const [color, setColor] = useState<string>('#000')
+    const { data: session } = useSession()
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        if (!processing){
+        if (!processing && session){
             setProcessing(true);
             const formData = new FormData();
 
@@ -46,7 +49,10 @@ const UploadForm = () => {
             if (colorRef.current) {
                 formData.append('color', colorRef.current.value);
             }
-        
+            
+            formData.append('refreshToken', session.refreshToken!);
+            console.log("form data is like this: ", formData);
+
             const response = await fetch('/api/post', {
                 method: 'POST',
                 body: formData,
@@ -60,6 +66,8 @@ const UploadForm = () => {
             }
             setFileName('Choose file');
             setProcessing(false);
+        } else {
+            toast('Please Login to Google First');
         }
     };
 

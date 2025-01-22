@@ -10,13 +10,36 @@ import { lightenHexColor, darkenHexColor } from '@/lib/colorUtils';
 import { useTheme } from "next-themes"
 import { Post } from '@/types/Post';
 import { TbMoodSadSquint } from "react-icons/tb";
+import { toast } from 'sonner';
 
 const Exams = () => {
     const [lighterColors, setLighterColors] = useState<string[]>([])
     const [darkerColors, setDarkerColors] = useState<string[]>([])
     const [exams, setExams] = useState<Post[]>([])
     const {theme} = useTheme();
+    const [downloadId, setDownloadId] = useState<string>('');
 
+
+    const handleDownload = async (fileId: string) => {
+        setDownloadId(fileId);
+        const response = await fetch(`/api/post/download?fileId=${fileId}`);
+
+        if (!response.ok) {
+            toast("Error fetching the file");
+            return;
+        }
+
+        const { downloadUrl } = await response.json();
+
+        // Trigger the file download using the public link
+        const a = document.createElement('a');
+        a.style.display = 'hidden';
+        a.href = downloadUrl;
+        a.click();
+        setDownloadId('');
+    };
+
+      
     useEffect(() => {
         const getExams = async ()=> {
           const response = await fetch('/api/post/exams');
@@ -75,14 +98,15 @@ const Exams = () => {
                         {exam.description}
                     </span>
                     <div className='w-full flex items-center justify-end'>
-                        {exam.file ? (<a 
-                            href={exam.file} 
-                            download 
+                        {exam.file ? (
+                        <button 
+                            onClick={()=>{handleDownload(exam.file as string)}}
                             style={{ color: theme=="dark"? exam.iconColor : darkerColors[idx] }}
                             className={` underline`}
                         >
-                            download file
-                        </a>): ''
+                      {downloadId == exam.file ? 'downloading' : 'download file'}
+                      </button>
+                        ) : ''
                         }
                     </div>
                 </div>

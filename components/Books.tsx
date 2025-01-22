@@ -9,12 +9,36 @@ import { lightenHexColor, darkenHexColor } from '@/lib/colorUtils';
 import { useTheme } from "next-themes"
 import { Post } from '@/types/Post';
 import { TbMoodSadSquint } from 'react-icons/tb';
+import { toast } from 'sonner';
 
 const Books = () => {
   const [lighterColors, setLighterColors] = useState<string[]>([])
   const [darkerColors, setDarkerColors] = useState<string[]>([])
   const [books, setBooks] = useState<Post[]>([])
   const {theme} = useTheme();
+  const [downloadId, setDownloadId] = useState<string>('');
+
+
+  const handleDownload = async (fileId: string) => {
+    setDownloadId(fileId);
+    console.log(downloadId);
+    const response = await fetch(`/api/post/download?fileId=${fileId}`);
+
+    if (!response.ok) {
+        toast("Error fetching the file");
+        return;
+    }
+
+    const { downloadUrl } = await response.json();
+
+    // Trigger the file download using the public link
+    const a = document.createElement('a');
+    a.style.display = 'hidden';
+    a.href = downloadUrl;
+    a.click();
+    setDownloadId('');
+  };
+
 
   useEffect(() => {
     const getBooks = async ()=> {
@@ -47,7 +71,6 @@ const Books = () => {
             <h2 className='text-black dark:text-white font-semibold text-3xl lg:text-5xl shrink-0 font-[family-name:var(--font-caveat)]'>Books and Articles</h2>
             <div className='h-[2px] w-full rounded-full bg-gradient-to-r from-[#e20b8c] to-[#f84b00] mb-4'/>
         </div>
-
         {books.map((book , idx)=>(
             <div 
               dir='ltr'
@@ -75,14 +98,13 @@ const Books = () => {
                   {book.description}
               </span>
               <div className='w-full flex items-center justify-end'>
-                  {book.file ? (<a 
-                      href={book.file} 
-                      download 
+                  {book.file ? (<button 
+                      onClick={()=>{handleDownload(book.file as string)}}
                       style={{ color: theme=="dark"? book.iconColor : darkerColors[idx] }}
                       className={` underline`}
                   >
-                      download file
-                  </a>) : ''}
+                      {downloadId == book.file ? 'downloading' : 'download file'}
+                  </button>) : ''}
                   
               </div>
           </div>

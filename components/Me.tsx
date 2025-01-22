@@ -7,7 +7,7 @@ const Me = () => {
     <div className='me sticky top-24 flex flex-col items-center w-full lg:max-w-[400px] h-min gap-2 rounded-none lg:rounded-2xl 
     shadow-none lg:shadow-md bg-white dark:bg-[#0e0e0e] pt-12 pb-12'>
         <h1 className='text-black dark:text-white text-2xl font-[family-name:var(--font-jua)]' style={{fontWeight:500}}>Jane Doe</h1>
-        <p className='text-sm text-gray-500 dark:text-gray-500 mb-12 font-[family-name:var(--font-jua)]'>Professional Kindergarten and Elementary School Teacher</p>
+        <p className='text-sm text-gray-500 dark:text-gray-500 mb-12 font-[family-name:var(--font-jua)] px-2 text-center'>Professional Kindergarten and Elementary School Teacher</p>
 
         <div className='w-full flex px-3 items-center justify-center'>
             <div className='flex flex-col items-start w-full max-w-[350px] bg-neutral-100 dark:bg-neutral-800 px-7 py-6 rounded-2xl'>

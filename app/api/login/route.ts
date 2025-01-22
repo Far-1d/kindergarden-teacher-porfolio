@@ -1,3 +1,4 @@
+const cookie = require('cookie');
 
 export const POST = async (req: Request) => {
     
@@ -6,16 +7,28 @@ export const POST = async (req: Request) => {
         
         try {
             if (username == process.env.LOGINUSERNAME && password == process.env.LOGINPASSWORD){
-                // return res.status(200).json({ message: 'خوش آمدید' });
-                return new Response(JSON.stringify({'message':'خوش آمدید'}), {status: 200})
+
+                const token = 'THERE-IS-NO-AUTH-TOKEN-HAHA';
+
+                return new Response(JSON.stringify({'message':'خوش آمدید'}), 
+                {status: 200, 
+                    headers: {
+                        'Set-Cookie': cookie.serialize('auth_token', token, {
+                            httpOnly: false, // set to true Prevent access by JavaScript but also client side can't access it
+                            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+                            sameSite: 'strict', // CSRF protection
+                            maxAge: 60 * 60 * 24 , // 1 day expiry
+                            path: '/', // Cookie is valid across the entire domain
+                        }),
+                        'Content-Type': 'application/json',
+                    },
+                })
             } else {
-                // return res.status(400).json({ message: 'کاربر پیدا نشد' });
                 return new Response(JSON.stringify({'message':'کاربر پیدا نشد'}), {status: 400})
             }
             
         } catch (error) {
             console.log("there is an error: ",error)
-            // return res.status(500).json({ message: 'خطایی رخ داد لطفا مجدد تلاش کنید' });
             return new Response(JSON.stringify({'message':'خطایی رخ داد لطفا مجدد تلاش کنید'}), {status: 500})
         }
     }
