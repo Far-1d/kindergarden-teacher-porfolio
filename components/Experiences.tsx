@@ -99,13 +99,13 @@ const Experiences = () => {
                 </span>
                 <div className='w-full flex items-center justify-end'>
                     {ex.file ? (
-                    <a 
+                    <button 
                         onClick={()=>{handleDownload(ex.file as string)}}
                         style={{ color: theme=="dark"? ex.iconColor : darkerColors[idx] }}
                         className={` underline`}
                     >
                       {downloadId == ex.file ? 'downloading' : 'download file'}
-                      </a>
+                      </button>
                     ):''}
                 </div>
             </div>
