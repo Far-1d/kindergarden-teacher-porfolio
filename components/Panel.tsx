@@ -291,13 +291,13 @@ const Panel = () => {
                       </td>
                       <td className="px-2 sm:px-6 py-4 text-right">
                         {processingUpdateId == post._id ? (
-                          <button onClick={()=>{handleUpdate(post._id)}} className="font-medium text-indigo-500 dark:text-indigo-500 hover:underline">{processingUpdate? 'saving ...' : 'save'}</button>
+                          <button onClick={()=>{handleUpdate(post._id)}} className="font-medium text-indigo-500 dark:text-indigo-500 hover:underline">{processingUpdate? 'saving' : 'save'}</button>
                         ) : (
                           <button onClick={()=>{handleFieldChange(post._id)}} className="font-medium text-purple-500 dark:text-purple-500 hover:underline">edit</button>
                         )}
                       </td>
                       <td className="px-2 sm:px-6 py-4 text-right">
-                          <button onClick={()=>{handleDelete(post._id)}} className="font-medium text-orange-500 dark:text-orange-500 hover:underline">{processingDelete? 'deleting ...' : 'delete'}</button>
+                          <button onClick={()=>{handleDelete(post._id)}} className="font-medium text-orange-500 dark:text-orange-500 hover:underline">{processingDelete? 'deleting' : 'delete'}</button>
                       </td>
                   </tr>
               ))}

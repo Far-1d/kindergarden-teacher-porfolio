@@ -51,7 +51,6 @@ const UploadForm = () => {
             }
             
             formData.append('refreshToken', session.refreshToken!);
-            console.log("form data is like this: ", formData);
 
             const response = await fetch('/api/post', {
                 method: 'POST',
