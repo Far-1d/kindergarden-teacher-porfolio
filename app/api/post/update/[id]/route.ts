@@ -90,12 +90,12 @@ export const PUT = async (req: Request, { params }: { params: Promise<{ id: stri
                     },
                 });
             } catch (error: BodyInit|Error|unknown|any) {
-                console.log('error happended: ', error);
+                console.log('error happened: ', error);
                 if (error.response) {
                     // If the error has a response (from Google API)
                     console.error("Error response from Google Drive:", error.response.data);
                 }
-                return;
+                return NextResponse.json({ message: 'error from google drive'}, { status: 500 });
             }
 
         }
