@@ -9,17 +9,20 @@ import Provider from "@/components/Provider"
 const caveat = Caveat({
   variable: "--font-caveat",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const playpen = Playpen_Sans({
   variable: "--font-playpen",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const jua = Jua({
   variable: "--font-jua",
   subsets: ["latin"],
-  weight: ['400']
+  weight: ['400'],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -44,7 +47,11 @@ export default function RootLayout({
               defaultTheme="light"
               disableTransitionOnChange
             >
-              {children}
+              <div className="w-full h-full flex items-center justify-center z-0 bg-cover bg-no-repeat
+              font-[family-name:var(--font-vazir)] bg-[url('/bg-white-xs.webp')] dark:bg-[url('/bg.svg')]
+              text-black dark:text-white">
+                {children}
+              </div>
           </ThemeProvider>
         </Provider>
         <Toaster/>

@@ -12,11 +12,12 @@ import { Post } from '@/types/Post';
 import { TbMoodSadSquint } from 'react-icons/tb';
 import { toast } from 'sonner';
 
-
-const Experiences = () => {
+interface MainContentProps {
+    exp: Post[];
+}
+const Experiences:React.FC<MainContentProps> = ({exp}) => {
     const [lighterColors, setLighterColors] = useState<string[]>([])
     const [darkerColors, setDarkerColors] = useState<string[]>([])
-    const [exp, setExp] = useState<Post[]>([])
     const {theme} = useTheme();
     const [downloadId, setDownloadId] = useState<string>('');
     
@@ -38,19 +39,6 @@ const Experiences = () => {
         a.click();
         setDownloadId('');
     };
-
-  
-  useEffect(() => {
-        const getExp = async ()=> {
-        const response = await fetch('/api/post/exp');
-        if (response.ok){
-            const data = await response.json();
-            const jsonData: Post[] = JSON.parse(data);
-            setExp(jsonData);
-        }
-        }
-        getExp();
-    }, []);
 
   useEffect(() => {
     const getAllColors = () => {

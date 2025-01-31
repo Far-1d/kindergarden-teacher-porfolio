@@ -12,10 +12,13 @@ import { Post } from '@/types/Post';
 import { TbMoodSadSquint } from "react-icons/tb";
 import { toast } from 'sonner';
 
-const Exams = () => {
+
+interface MainContentProps {
+    exams: Post[];
+}
+const Exams:React.FC<MainContentProps> = ({exams}) => {
     const [lighterColors, setLighterColors] = useState<string[]>([])
     const [darkerColors, setDarkerColors] = useState<string[]>([])
-    const [exams, setExams] = useState<Post[]>([])
     const {theme} = useTheme();
     const [downloadId, setDownloadId] = useState<string>('');
 
@@ -39,19 +42,6 @@ const Exams = () => {
         setDownloadId('');
     };
 
-      
-    useEffect(() => {
-        const getExams = async ()=> {
-          const response = await fetch('/api/post/exams');
-          if (response.ok){
-            const data = await response.json();
-            const jsonData: Post[] = JSON.parse(data);
-            setExams(jsonData);
-          }
-        }
-        getExams();
-      }, []);
-
     useEffect(() => {
         const getAllColors = () => {
             const newLighterColors = exams.map(exam => lightenHexColor(exam.iconColor, 60)); // Lighten by 20%
@@ -63,6 +53,7 @@ const Exams = () => {
 
         getAllColors();
     }, [exams]); 
+    
     
   return (
     <div className='w-full h-full flex flex-col items-start justify-start px-5 lg:px-10 py-10 gap-5 bg-white dark:bg-[#0e0e0e] lg:rounded-2xl'>

@@ -9,6 +9,8 @@ import Panel from "@/components/Panel";
 import {signIn, signOut, useSession, getProviders, LiteralUnion, ClientSafeProvider} from 'next-auth/react';
 import { BuiltInProviderType } from "next-auth/providers/index";
 import Cookies from "js-cookie";
+import Head from "next/head";
+
 
 export default function Control() {
   const [images, setImages] = useState<HTMLImageElement[]>([]);
@@ -47,64 +49,68 @@ export default function Control() {
   }, []);
   
   return (
-    <div className="relative flex flex-col items-center justify-start min-h-screen  
-      font-[family-name:var(--font-vazir)] bg-[url('/bg-white.jpg')] dark:bg-[url('/bg.svg')] 
-      bg-cover bg-no-repeat dark:bg-neutral-950 z-0">
-      <Nav handlePageToggle={handlePageToggle}/>
-      <Snowfall 
-        images={images}
-        radius={[26, 50.0]}
-        snowflakeCount={30}
-        style={{zIndex:1}}
-      />
-      <main className="flex items-center justify-center w-full h-full z-20">
+    <>
+      <Head>
+        <meta name="robots" content="noindex" />
+      </Head>
+      <div className="relative flex flex-col items-center justify-start min-h-screen  
+        w-full z-0">
+        <Nav handlePageToggle={handlePageToggle}/>
+        <Snowfall 
+          images={images}
+          radius={[26, 50.0]}
+          snowflakeCount={30}
+          style={{zIndex:1}}
+        />
+        <main className="flex items-center justify-center w-full h-full z-20">
 
-        <div className="flex flex-col h-full w-full items-center justify-center px-10" dir="ltr">
-        
-        {isLoggedin && (
-          <>
-            {session ? (
-              <>        
-                <p className="text-neutral-700 dark:text-neutral-200">Signed in as {session.user!.email}</p> <br />        
-                <button onClick={() => signOut()}
-                  className='bg-neutral-700 dark:bg-neutral-200 text-white dark:text-black 
-                  hover:bg-gradient-to-r dark:hover:text-white from-[#ff0f7b] to-[#f89b29] 
-                  px-8 py-3 rounded-3xl'>
-                    Sign out
-                </button>      
-              </>
-            ):(  
-              <>
-                {providers && 
-                  Object.values(providers).map((provider)=>(
-                    <button
-                      type='button'
-                      key={provider.name}
-                      onClick={()=> signIn(provider.id)}
-                      className='bg-neutral-700 dark:bg-neutral-200 text-white dark:text-black 
-                        hover:bg-gradient-to-r dark:hover:text-white from-[#ff0f7b] to-[#f89b29] 
-                        px-8 py-3 rounded-3xl'
-                    >
-                      Sign In with {provider.name}
-                    </button>
-                  ))
-                }
-              </>
-          )}
-          </>
-        )}
-
-          {isLoggedin ? (<UploadForm/>) : (<LoginForm setIsLoggedin={setIsLoggedin}/>)}
+          <div className="flex flex-col h-full w-full items-center justify-center px-10" dir="ltr">
+          
           {isLoggedin && (
-            <div className="flex flex-col items-center justify-center w-full overflow-x-hidden mt-12">
-              <h2 className="text-2xl sm:text-4xl font-semibold py-6 text-neutral-800 dark:text-neutral-100 ">جدول اطلاعات</h2>
-              <Panel/>
-            </div>
+            <>
+              {session ? (
+                <>        
+                  <p className="text-neutral-700 dark:text-neutral-200">Signed in as {session.user!.email}</p> <br />        
+                  <button onClick={() => signOut()}
+                    className='bg-neutral-700 dark:bg-neutral-200 text-white dark:text-black 
+                    hover:bg-gradient-to-r dark:hover:text-white from-[#ff0f7b] to-[#f89b29] 
+                    px-8 py-3 rounded-3xl'>
+                      Sign out
+                  </button>      
+                </>
+              ):(  
+                <>
+                  {providers && 
+                    Object.values(providers).map((provider)=>(
+                      <button
+                        type='button'
+                        key={provider.name}
+                        onClick={()=> signIn(provider.id)}
+                        className='bg-neutral-700 dark:bg-neutral-200 text-white dark:text-black 
+                          hover:bg-gradient-to-r dark:hover:text-white from-[#ff0f7b] to-[#f89b29] 
+                          px-8 py-3 rounded-3xl'
+                      >
+                        Sign In with {provider.name}
+                      </button>
+                    ))
+                  }
+                </>
+            )}
+            </>
           )}
-        </div>
-      </main>
-      
-      <Footer fixed={true}/>
-    </div>
+
+            {isLoggedin ? (<UploadForm/>) : (<LoginForm setIsLoggedin={setIsLoggedin}/>)}
+            {isLoggedin && (
+              <div className="flex flex-col items-center justify-center w-full overflow-x-hidden mt-12">
+                <h2 className="text-2xl sm:text-4xl font-semibold py-6 text-neutral-800 dark:text-neutral-100 ">جدول اطلاعات</h2>
+                <Panel/>
+              </div>
+            )}
+          </div>
+        </main>
+        
+        <Footer fixed={true}/>
+      </div>
+    </>
   );
 }

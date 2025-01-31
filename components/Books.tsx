@@ -11,10 +11,12 @@ import { Post } from '@/types/Post';
 import { TbMoodSadSquint } from 'react-icons/tb';
 import { toast } from 'sonner';
 
-const Books = () => {
+interface MainContentProps {
+  books: Post[];
+}
+const Books: React.FC<MainContentProps> = ({books}) => {
   const [lighterColors, setLighterColors] = useState<string[]>([])
   const [darkerColors, setDarkerColors] = useState<string[]>([])
-  const [books, setBooks] = useState<Post[]>([])
   const {theme} = useTheme();
   const [downloadId, setDownloadId] = useState<string>('');
 
@@ -39,18 +41,6 @@ const Books = () => {
     setDownloadId('');
   };
 
-
-  useEffect(() => {
-    const getBooks = async ()=> {
-      const response = await fetch('/api/post/books');
-      if (response.ok){
-        const data = await response.json();
-        const jsonData: Post[] = JSON.parse(data);
-        setBooks(jsonData);
-      }
-    }
-    getBooks();
-  }, []);
 
   useEffect(() => {
     const getAllColors = () => {
